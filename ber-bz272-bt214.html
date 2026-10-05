@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BER: מ-BZ272 ל-BT214</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rc:#E9A800; --on:#1B1B1B;
+  --bg:#E7EAEE; --panel:#FFFFFF; --ink:#18212B; --muted:#56606C; --line:#C9D0D8;
+  --sign:#22303F; --sign-ink:#F4F7FA; --sign-sub:#B9C6D3;
+  --ok:#1D8F55; --warn:#B87800; --bad:#C8372B;
+  --ok-bg:#E3F4EA; --warn-bg:#FFF3D6; --bad-bg:#FBE4E1;
+  --band:#F3F5F7; --band-on:#FFF3CC;
+  color-scheme: light dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --rc:#FFC633; --on:#1B1B1B;
+    --bg:#151B22; --panel:#1E2630; --ink:#E7ECF1; --muted:#A3B0BD; --line:#364352;
+    --sign:#2A3A4C; --sign-ink:#F4F7FA; --sign-sub:#B9C6D3;
+    --ok:#4CC584; --warn:#F0B53A; --bad:#F07264;
+    --ok-bg:#183326; --warn-bg:#382D14; --bad-bg:#3A1D1A;
+    --band:#1A222B; --band-on:#3A3320;
+  }
+}
+:root[data-theme="dark"]{
+  --rc:#FFC633; --on:#1B1B1B;
+  --bg:#151B22; --panel:#1E2630; --ink:#E7ECF1; --muted:#A3B0BD; --line:#364352;
+  --sign:#2A3A4C; --sign-ink:#F4F7FA; --sign-sub:#B9C6D3;
+  --ok:#4CC584; --warn:#F0B53A; --bad:#F07264;
+  --ok-bg:#183326; --warn-bg:#382D14; --bad-bg:#3A1D1A;
+  --band:#1A222B; --band-on:#3A3320;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"IBM Plex Sans Hebrew",system-ui,"Arial Hebrew",Arial,sans-serif;
+  font-size:17px; line-height:1.6;
+}
+.wrap{max-width:720px; margin:0 auto; padding:14px 14px 56px;}
+a{color:inherit; text-underline-offset:3px}
+button,input{font:inherit; color:inherit}
+:focus-visible{outline:3px solid #2E8FD6; outline-offset:2px}
+h2{font-size:1.2rem; line-height:1.3; margin:0 0 .5rem; font-weight:700}
+h3{font-size:1rem; margin:1rem 0 .4rem; font-weight:700}
+p{margin:0 0 .6rem}
+.muted{color:var(--muted); font-size:.9rem}
+section{margin-top:18px}
+.panel{background:var(--panel); border-radius:14px; padding:16px; border:1px solid var(--line)}
+
+.sign{background:var(--sign); color:var(--sign-ink); border-radius:16px; padding:18px 18px 14px}
+.sign .where{color:var(--sign-sub); font-size:.9rem; margin:0 0 4px}
+.sign h1{font-size:1.6rem; line-height:1.2; margin:0 0 14px; font-weight:700}
+.legs{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.leg{border-top:3px solid var(--rc); padding-top:8px}
+.leg + .leg{border-top-color:var(--sign-sub)}
+.leg .fn{display:block; font-size:1.5rem; font-weight:700; letter-spacing:.02em; direction:ltr; text-align:right}
+.leg .rt, .leg .tm{display:block; font-size:.92rem}
+.leg .tm{color:var(--sign-sub)}
+
+.note{margin-top:12px; background:var(--warn-bg); border-inline-start:5px solid var(--warn); border-radius:10px; padding:12px 14px; font-size:.97rem}
+
+.mapbox{padding:10px 10px 14px}
+.mapbox svg{display:block; width:100%; height:auto; color:var(--rc)}
+svg text{direction:rtl; font-family:inherit}
+.band{fill:var(--band); stroke:var(--line); stroke-width:1; transition:fill .3s}
+.band.on{fill:var(--band-on)}
+.fl{font-size:15px; font-weight:700; fill:var(--ink)}
+.fd{font-size:10px; fill:var(--muted)}
+.rbase{fill:none; stroke:currentColor; stroke-opacity:.28; stroke-width:5; stroke-linecap:round; stroke-linejoin:round}
+.rdone{fill:none; stroke:currentColor; stroke-width:5; stroke-linecap:round; stroke-linejoin:round}
+.node circle{fill:var(--panel); stroke:currentColor; stroke-width:2.5}
+.node text.n{font-size:10px; font-weight:700; fill:var(--ink); text-anchor:middle; dominant-baseline:central}
+.node text.l{font-size:10.5px; fill:var(--ink); text-anchor:middle}
+.node.past circle{fill:currentColor; fill-opacity:.35}
+.node.on circle{fill:currentColor}
+.node.on text.n{fill:var(--on)}
+#dot{fill:currentColor; stroke:var(--panel); stroke-width:3}
+
+.player{display:flex; gap:8px; align-items:center; margin-top:8px}
+.player button{border:1px solid var(--line); background:var(--bg); border-radius:999px; padding:7px 14px; cursor:pointer; font-weight:500}
+.player button.play{background:var(--ink); color:var(--panel); border-color:var(--ink); min-width:96px}
+.bar{display:flex; gap:3px; flex:1}
+.bar i{flex:1; height:5px; border-radius:3px; background:var(--line)}
+.bar i.on{background:var(--rc)}
+
+.caption{margin-top:12px; border-top:1px solid var(--line); padding-top:12px; min-height:150px}
+.caption .k{font-size:.85rem; color:var(--muted)}
+.caption h3{margin:.15rem 0 .35rem; font-size:1.12rem}
+.floor{display:inline-block; font-weight:700; font-size:.82rem; padding:1px 8px; border-radius:6px; background:var(--ink); color:var(--panel); direction:ltr}
+.signtxt{display:inline-block; background:var(--sign); color:var(--sign-ink); border-radius:6px; padding:2px 8px; font-size:.88rem; direction:ltr; unicode-bidi:isolate}
+.tt{font-size:.88rem; color:var(--muted)}
+
+.inputs{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.inputs label{display:block; font-size:.9rem; color:var(--muted); min-width:0}
+.inputs input[type="time"]{
+  display:block; width:100%; min-width:0; max-width:100%; margin-top:4px; font-size:1.1rem; font-weight:700; padding:6px 8px;
+  border:1px solid var(--line); border-radius:10px; background:var(--bg); direction:ltr; text-align:right
+}
+.pp{display:flex; gap:6px; margin-top:10px; flex-wrap:wrap}
+.pp button{border:1px solid var(--line); background:var(--bg); border-radius:999px; padding:6px 12px; cursor:pointer; font-size:.92rem}
+.pp button[aria-pressed="true"]{background:var(--ink); color:var(--panel); border-color:var(--ink)}
+.verdict{margin-top:12px; border-radius:12px; padding:12px 14px}
+.verdict.ok{background:var(--ok-bg)} .verdict.ok b{color:var(--ok)}
+.verdict.warn{background:var(--warn-bg)} .verdict.warn b{color:var(--warn)}
+.verdict.bad{background:var(--bad-bg)} .verdict.bad b{color:var(--bad)}
+.verdict b{font-size:1.1rem; display:block}
+.rows{display:grid; grid-template-columns:auto 1fr; gap:4px 14px; margin:10px 0 0; font-size:.95rem}
+.rows dt{color:var(--muted)} .rows dd{margin:0; font-weight:700; direction:ltr; text-align:right}
+.hist{list-style:none; padding:0; margin:6px 0 0; display:flex; flex-wrap:wrap; gap:6px}
+.hist li{border-radius:8px; padding:4px 8px; font-size:.85rem; line-height:1.35}
+.hist li b{display:block; direction:ltr; text-align:right}
+.hist li.ok{background:var(--ok-bg)} .hist li.warn{background:var(--warn-bg)} .hist li.bad{background:var(--bad-bg)}
+
+ol.steps{list-style:none; margin:0; padding:0}
+ol.steps li{display:grid; grid-template-columns:34px 1fr; gap:10px; padding:12px 0; border-top:1px solid var(--line)}
+ol.steps li:first-child{border-top:0}
+ol.steps .num{width:30px; height:30px; border-radius:50%; background:var(--rc); display:grid; place-items:center}
+ol.steps .num span{color:var(--on); font-weight:700; font-size:.95rem}
+ol.steps h3{margin:0 0 .2rem; font-size:1rem}
+ol.steps p{margin:.15rem 0 .35rem; font-size:.95rem}
+
+ul.plain{padding-inline-start:1.1rem; margin:0}
+ul.plain li{margin-bottom:.45rem; font-size:.96rem}
+.src a{display:block; padding:3px 0; font-size:.92rem}
+footer{margin-top:22px; font-size:.85rem; color:var(--muted)}
+
+@media (max-width:420px){
+  body{font-size:16px}
+  .sign h1{font-size:1.4rem}
+  .leg .fn{font-size:1.3rem}
+}
+@media (prefers-reduced-motion: reduce){ .band{transition:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="sign">
+  <p class="where">ברלין BER, טרמינל 1 (שתי הטיסות)</p>
+  <h1>מהמטוס בברלין לשער לריגה</h1>
+  <div class="legs">
+    <div class="leg">
+      <span class="fn">BZ272</span>
+      <span class="rt">מתל אביב לברלין</span>
+      <span class="tm">נחיתה מתוכננת בערך 17:50</span>
+    </div>
+    <div class="leg">
+      <span class="fn">BT214</span>
+      <span class="rt">מברלין לריגה (airBaltic)</span>
+      <span class="tm">המראה 20:35</span>
+    </div>
+  </div>
+</header>
+
+<div class="note">
+  עם טרולי בלבד לא יוצאים מהאזור הסטרילי: ביקורת דרכונים, בידוק אחד, ולשער.
+  צריך שיהיה לך כרטיס עלייה ל-BT214 בטלפון כשאתה נוחת.
+</div>
+
+<section aria-labelledby="h-map">
+  <h2 id="h-map">המסלול, קומה אחרי קומה</h2>
+  <p class="muted">חתך סכמטי של טרמינל 1, לא בקנה מידה. כפתור ההפעלה מריץ את המסלול שלב אחרי שלב.</p>
+  <div class="panel mapbox">
+    <svg id="map" viewBox="0 0 400 200" role="img" aria-labelledby="map-title">
+      <title id="map-title">חתך הקומות E2, E1, E0Z עם המסלול מהמטוס לשער</title>
+      <g>
+        <rect class="band" data-floor="E2" x="6" y="12" width="388" height="52" rx="7"/>
+        <text class="fl" x="388" y="36" text-anchor="start">E2</text>
+        <text class="fd" x="388" y="53" text-anchor="start">שערי לא-שנגן</text>
+
+        <rect class="band" data-floor="E1" x="6" y="74" width="388" height="52" rx="7"/>
+        <text class="fl" x="388" y="98" text-anchor="start">E1</text>
+        <text class="fd" x="388" y="115" text-anchor="start">יציאות ושערי A</text>
+
+        <rect class="band" data-floor="E0Z" x="6" y="136" width="388" height="52" rx="7"/>
+        <text class="fl" x="388" y="160" text-anchor="start">E0Z</text>
+        <text class="fd" x="388" y="177" text-anchor="start">מסדרון ביניים</text>
+      </g>
+      <path id="rbase" class="rbase" d=""/>
+      <path id="rdone" class="rdone" d=""/>
+      <g id="nodes"></g>
+      <circle id="dot" r="6.5" cx="0" cy="0"/>
+    </svg>
+
+    <div class="player">
+      <button type="button" id="prev">הקודם</button>
+      <button type="button" id="play" class="play">▶ הפעלה</button>
+      <button type="button" id="next">הבא</button>
+      <div class="bar" id="bar" aria-hidden="true"></div>
+    </div>
+
+    <div class="caption" id="caption" aria-live="polite"></div>
+  </div>
+</section>
+
+<section aria-labelledby="h-calc">
+  <div class="panel">
+    <h2 id="h-calc">אני מספיק?</h2>
+    <p class="muted">הכנס את שעת הנחיתה בפועל של BZ272. ההערכה מבוססת על זמני תור טיפוסיים, היא לא הבטחה.</p>
+    <div class="inputs">
+      <label>נחיתה של BZ272
+        <input type="time" id="land" value="17:50">
+      </label>
+      <label>המראה של BT214
+        <input type="time" id="dep" value="20:35">
+      </label>
+    </div>
+    <div class="pp" role="group" aria-label="סוג דרכון">
+      <button type="button" data-pp="il" aria-pressed="true">דרכון ישראלי</button>
+      <button type="button" data-pp="eu" aria-pressed="false">דרכון אירופי</button>
+    </div>
+    <div class="verdict" id="verdict" aria-live="polite"></div>
+    <dl class="rows" id="rows"></dl>
+
+    <h3>מה היה קורה בטיסות האחרונות של BZ272</h3>
+    <p class="muted">שעת הגעה שדווחה, יולי–אוגוסט 2026.</p>
+    <ul class="hist" id="hist"></ul>
+  </div>
+</section>
+
+<section aria-labelledby="h-steps">
+  <div class="panel">
+    <h2 id="h-steps">כל השלבים</h2>
+    <ol class="steps" id="steps"></ol>
+  </div>
+</section>
+
+<section aria-labelledby="h-planb">
+  <div class="panel">
+    <h2 id="h-planb">אם לא מספיקים</h2>
+    <ul class="plain">
+      <li>להתקשר ל-airBaltic לפני ש-BT214 ממריאה ולבקש מעבר לטיסה הבאה לריגה. בכרטיסים נפרדים זה בדרך כלל בתשלום.</li>
+      <li>אם יש לך באותה הזמנה של airBaltic גם טיסה חזרה, להודיע להם. אי-הופעה עלולה לבטל את החזור.</li>
+      <li>עזרה במקום: דלפק המידע VIABER במרקטפלייס, קומה E1, פתוח עד 22:00.</li>
+    </ul>
+  </div>
+</section>
+
+<section aria-labelledby="h-src">
+  <div class="panel src">
+    <h2 id="h-src">מקורות</h2>
+    <a href="https://ber.berlin-airport.de/en/selected-for-you/VIABER.html" target="_blank" rel="noopener">BER: מעבר עצמאי בין טיסות (VIABER)</a>
+    <a href="https://corporate.berlin-airport.de/content/dam/corporate/en/unternehmen-presse/ber/flughafenanlagen-ber-en.pdf" target="_blank" rel="noopener">BER: קומות טרמינל 1 (מסמך רשמי)</a>
+    <a href="https://www.planemapper.com/flights/BZ272" target="_blank" rel="noopener">PlaneMapper: היסטוריית BZ272</a>
+    <a href="https://www.flightradar24.com/data/flights/bz272" target="_blank" rel="noopener">Flightradar24: BZ272</a>
+  </div>
+</section>
+
+<footer>
+  המפה סכמטית. השער נקבע ביום הטיסה: תמיד לעקוב אחרי השלטים והמסכים.
+  לוחות הזמנים עשויים להשתנות בלוח החורף (מסוף אוקטובר). עודכן 5.10.2026.
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var KEY = 'ber-bz272-bt214-v2';
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e){ saved = {}; }
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
+
+  var PTS = [[290,38,1],[265,38],[265,162,2],[215,162,3],[155,162,4],[120,162],[120,100,5],[42,100,6]];
+  var LABELS = ['מטוס','מסדרון','דרכונים','בידוק','מרקטפלייס','שער A'];
+  var STEPS = [
+    {f:'E2', fl:'E2 / E0', t:'יוצאים מהמטוס', b:'עם שרוול אתה בקומה E2. אם מסיעים באוטובוס, מורידים אותך בקומה E0 ועולים לפי השלטים.', s:'', m:'10–20 דק׳'},
+    {f:'E0Z', fl:'E0Z', t:'הולכים אחרי Transfer, לא אחרי Baggage claim', b:'יורדים למסדרון קומת הביניים E0Z.', s:'Transfer / Flight connections', m:'3–5 דק׳'},
+    {f:'E0Z', fl:'E0Z', t:'ביקורת דרכונים: כניסה לשנגן', b:'עם דרכון ישראלי, בפעם הראשונה נותנים טביעות אצבע ותמונה (מערכת EES). להראות את כרטיס העלייה לריגה.', s:'Passkontrolle / Passport control', m:'15–50 דק׳'},
+    {f:'E0Z', fl:'E0Z', t:'בידוק ביטחוני', b:'נוזלים עד 100 מ״ל בשקית שקופה, למעלה בטרולי. אחרי הבידוק אתה באזור שנגן.', s:'Sicherheitskontrolle / Security', m:'10–30 דק׳'},
+    {f:'E1', fl:'E1', t:'עולים למרקטפלייס בקומה E1', b:'בודקים במסך את השער של BT214.', s:'Gates A', m:'2–5 דק׳'},
+    {f:'E1', fl:'E1', t:'הולכים לשער A', b:'airBaltic יצאה לאחרונה משערים A32 ו-A33. אין עוד ביקורת דרכונים. להגיע לשער 25 דק׳ לפני ההמראה, הוא נסגר כ-15 דק׳ לפני.', s:'A32 / A33 (לפי המסך)', m:'8–18 דק׳'}
+  ];
+
+  // minutes [typical, worst]
+  var T = { deboard:[15,25], link:[3,5], pass:{il:[25,50], eu:[8,20]}, sec:[15,30], walk:[12,18] };
+
+  var HIST = [
+    {d:'1.7', s:'17:40', a:'18:57'}, {d:'3.7', s:'17:40', a:'18:15'},
+    {d:'27.7', s:'17:50', a:'20:50'}, {d:'28.7', s:'17:30', a:'19:57'},
+    {d:'29.7', s:'17:50', a:'20:57'}, {d:'30.7', s:'18:05', a:'19:21'},
+    {d:'31.7', s:'17:50', a:'18:47'}, {d:'2.8', s:'18:05', a:'19:29'},
+    {d:'3.8', s:'17:50', a:'18:06'}
+  ];
+
+  var state = {
+    pp: saved.pp === 'eu' ? 'eu' : 'il',
+    land: saved.land || '17:50',
+    dep: saved.dep || '20:35'
+  };
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var rbase = document.getElementById('rbase'), rdone = document.getElementById('rdone');
+  var nodesG = document.getElementById('nodes'), dot = document.getElementById('dot');
+  var bar = document.getElementById('bar'), cap = document.getElementById('caption');
+  var playBtn = document.getElementById('play');
+  var NS = 'http://www.w3.org/2000/svg';
+  var cum = [0], total, stepAt = [], pos = 0, step = 0, playing = false, timer = null, raf = null;
+
+  function el(tag, attrs, txt){
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (txt != null) e.textContent = txt;
+    return e;
+  }
+  function ltr(x){ return x.replace(/(\d+[–-]\d+)/g, '<span dir="ltr">$1</span>'); }
+
+  var d = PTS.map(function(p,i){ return (i ? 'L' : 'M') + p[0] + ' ' + p[1]; }).join(' ');
+  rbase.setAttribute('d', d); rdone.setAttribute('d', d);
+  for (var i = 1; i < PTS.length; i++) cum[i] = cum[i-1] + Math.hypot(PTS[i][0]-PTS[i-1][0], PTS[i][1]-PTS[i-1][1]);
+  total = cum[cum.length-1];
+  PTS.forEach(function(p,i){ if (p[2]) stepAt[p[2]-1] = cum[i]; });
+  rdone.style.strokeDasharray = total + ' ' + total;
+
+  var k = 0;
+  PTS.forEach(function(p){
+    if (!p[2]) return;
+    var g = el('g', {'class':'node'});
+    g.appendChild(el('circle', {cx:p[0], cy:p[1], r:9}));
+    g.appendChild(el('text', {'class':'n', x:p[0], y:p[1]}, String(p[2])));
+    g.appendChild(el('text', {'class':'l', x:p[0], y:p[1]+22}, LABELS[k]));
+    nodesG.appendChild(g); k++;
+  });
+  STEPS.forEach(function(){ bar.appendChild(document.createElement('i')); });
+
+  document.getElementById('steps').innerHTML = STEPS.map(function(s, i){
+    return '<li><div class="num"><span>' + (i+1) + '</span></div><div>' +
+      '<h3>' + s.t + ' <span class="floor">' + s.fl + '</span></h3>' +
+      '<p>' + ltr(s.b) + '</p>' +
+      (s.s ? '<p>שלט: <span class="signtxt">' + s.s + '</span></p>' : '') +
+      '<div class="tt">' + ltr(s.m) + '</div></div></li>';
+  }).join('');
+
+  function pointAt(dist){
+    if (dist <= 0) return PTS[0];
+    for (var i = 1; i < PTS.length; i++){
+      if (dist <= cum[i]){
+        var seg = cum[i] - cum[i-1], t = seg ? (dist - cum[i-1]) / seg : 0;
+        return [PTS[i-1][0] + (PTS[i][0]-PTS[i-1][0])*t, PTS[i-1][1] + (PTS[i][1]-PTS[i-1][1])*t];
+      }
+    }
+    return PTS[PTS.length-1];
+  }
+  function setPos(x){
+    pos = x;
+    var p = pointAt(x);
+    dot.setAttribute('cx', p[0]); dot.setAttribute('cy', p[1]);
+    rdone.style.strokeDashoffset = String(total - x);
+  }
+  function renderState(){
+    var s = STEPS[step];
+    Array.prototype.forEach.call(nodesG.children, function(g, i){
+      g.classList.toggle('on', i === step); g.classList.toggle('past', i < step);
+    });
+    Array.prototype.forEach.call(bar.children, function(b, i){ b.classList.toggle('on', i <= step); });
+    Array.prototype.forEach.call(document.querySelectorAll('.band'), function(b){
+      b.classList.toggle('on', b.getAttribute('data-floor') === s.f);
+    });
+    cap.innerHTML =
+      '<div class="k">שלב ' + (step+1) + ' מתוך ' + STEPS.length + ' &nbsp; <span class="floor">' + s.fl + '</span></div>' +
+      '<h3>' + s.t + '</h3><p>' + ltr(s.b) + '</p>' +
+      (s.s ? '<p>שלט: <span class="signtxt">' + s.s + '</span></p>' : '') +
+      '<div class="tt">זמן משוער: ' + ltr(s.m) + '</div>';
+    document.getElementById('prev').disabled = step === 0;
+    document.getElementById('next').disabled = step === STEPS.length - 1;
+  }
+  function moveTo(i, cb){
+    cancelAnimationFrame(raf);
+    var from = pos, to = stepAt[i];
+    step = i; renderState();
+    var dur = reduce ? 0 : Math.min(1600, Math.max(450, Math.abs(to - from) * 7));
+    if (!dur){ setPos(to); if (cb) cb(); return; }
+    var t0 = null;
+    function frame(ts){
+      if (t0 === null) t0 = ts;
+      var q = Math.min(1, (ts - t0) / dur);
+      var e = q < .5 ? 2*q*q : 1 - Math.pow(-2*q + 2, 2) / 2;
+      setPos(from + (to - from) * e);
+      if (q < 1) raf = requestAnimationFrame(frame); else if (cb) cb();
+    }
+    raf = requestAnimationFrame(frame);
+  }
+  function stop(){ playing = false; clearTimeout(timer); playBtn.textContent = '▶ הפעלה'; }
+  function tick(){
+    if (!playing) return;
+    if (step >= STEPS.length - 1){ stop(); return; }
+    moveTo(step + 1, function(){ timer = setTimeout(tick, reduce ? 2600 : 1900); });
+  }
+  playBtn.addEventListener('click', function(){
+    if (playing){ stop(); return; }
+    playing = true; playBtn.textContent = '❚❚ השהיה';
+    if (step >= STEPS.length - 1){ cancelAnimationFrame(raf); setPos(0); step = 0; renderState(); timer = setTimeout(tick, 900); }
+    else tick();
+  });
+  document.getElementById('prev').addEventListener('click', function(){ stop(); if (step > 0) moveTo(step - 1); });
+  document.getElementById('next').addEventListener('click', function(){ stop(); if (step < STEPS.length - 1) moveTo(step + 1); });
+
+  /* calculator */
+  function toMin(v, fb){
+    var m = /^(\d{1,2}):(\d{2})/.exec(v || '') || /^(\d{1,2}):(\d{2})/.exec(fb);
+    return (+m[1]) * 60 + (+m[2]);
+  }
+  function fmt(x){
+    x = ((Math.round(x) % 1440) + 1440) % 1440;
+    var h = Math.floor(x / 60), m = x % 60;
+    return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
+  }
+  function calc(land, dep){
+    var p = T.pass[state.pp];
+    var typ = T.deboard[0] + T.link[0] + p[0] + T.sec[0] + T.walk[0];
+    var worst = T.deboard[1] + T.link[1] + p[1] + T.sec[1] + T.walk[1];
+    var dl = dep - 20;
+    return {
+      gateTyp: land + typ, gateWorst: land + worst, dl: dl, latest: dl - typ,
+      status: land + worst <= dl ? 'ok' : (land + typ <= dl ? 'warn' : 'bad')
+    };
+  }
+  var MSG = {
+    ok:   ['סביר שתספיק', 'גם עם תורים ארוכים יש מרווח. לא להתעכב בדרך.'],
+    warn: ['צמוד', 'אפשרי אם התורים קצרים. ללכת מהר ולא לעצור.'],
+    bad:  ['כנראה לא תספיק', 'בזמני תור רגילים לא מגיעים בזמן. להתקשר ל-airBaltic.']
+  };
+  var WORD = {ok:'מספיק', warn:'צמוד', bad:'לא מספיק'};
+
+  function renderCalc(){
+    var land = toMin(state.land, '17:50'), dep = toMin(state.dep, '20:35');
+    var r = calc(land, dep);
+    var v = document.getElementById('verdict');
+    v.className = 'verdict ' + r.status;
+    v.innerHTML = '<b>' + MSG[r.status][0] + '</b>' + MSG[r.status][1];
+    document.getElementById('rows').innerHTML =
+      '<dt>הגעה משוערת לשער</dt><dd>' + fmt(r.gateTyp) + '</dd>' +
+      '<dt>עם תורים ארוכים</dt><dd>' + fmt(r.gateWorst) + '</dd>' +
+      '<dt>להיות בשער עד</dt><dd>' + fmt(r.dl) + '</dd>' +
+      '<dt>נחיתה אחרונה סבירה</dt><dd>' + fmt(r.latest) + '</dd>';
+    document.getElementById('hist').innerHTML = HIST.map(function(h){
+      var x = calc(toMin(h.a), dep);
+      return '<li class="' + x.status + '" aria-label="' + h.d + ' הגעה ' + h.a + ', ' + WORD[x.status] + '">' +
+        h.d + ' <span class="muted">(מתוכנן ' + h.s + ')</span><b>' + h.a + '</b>' + WORD[x.status] + '</li>';
+    }).join('');
+  }
+
+  var landI = document.getElementById('land'), depI = document.getElementById('dep');
+  landI.value = state.land; depI.value = state.dep;
+  landI.addEventListener('input', function(){ state.land = landI.value; save(); renderCalc(); });
+  depI.addEventListener('input', function(){ state.dep = depI.value; save(); renderCalc(); });
+  var ppBtns = document.querySelectorAll('.pp button');
+  Array.prototype.forEach.call(ppBtns, function(b){
+    b.setAttribute('aria-pressed', String(b.getAttribute('data-pp') === state.pp));
+    b.addEventListener('click', function(){
+      state.pp = b.getAttribute('data-pp'); save();
+      Array.prototype.forEach.call(ppBtns, function(x){ x.setAttribute('aria-pressed', String(x === b)); });
+      renderCalc();
+    });
+  });
+
+  setPos(0); renderState(); renderCalc();
+})();
+</script>
+</body>
+</html>
